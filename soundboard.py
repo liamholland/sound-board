@@ -10,18 +10,17 @@ frame.grid()
 
 #function to refresh the application
 def get_num_recordings():
-    curr_dir = os.getcwd()
+    curr_dir = os.getcwd()  #get the current directory
     
     count = 0
     
+    #count the number of .wav files in the directory
     for file in os.listdir(curr_dir):
         if os.path.isfile(os.path.join(curr_dir, file)) and file.endswith('.wav'):
             count += 1
         
     return count
 #end of function refresh_interface
-
-num_recordings = get_num_recordings()    #get the number of recordings in the directory
 
 #function to record audio
 def record_audio():
@@ -66,12 +65,36 @@ def record_audio():
     wf.writeframes(b''.join(frames))
     wf.close()
     
-    num_recordings = get_num_recordings()
+    add_buttons()
     return
 #end of function record_audio
 
-#add elements
-tk.Button(frame, text="Record", command=record_audio).grid(column=0, row=0)   #record button
-tk.Button(frame, text="Quit", command=window.destroy).grid(column=0, row=1) #quit button
+#function to retrieve the names of recording files
+def get_recording_names():
+    files = os.listdir(os.getcwd())
+    recordings = []
+    
+    for file in files:
+        if file.endswith('.wav'):
+            recordings.append(file)
+    
+    return recordings
+#end of function get_recording_names
+
+#function to add buttons to the ui
+def add_buttons():    
+    #record and quit buttons buttons
+    tk.Button(frame, text="Record", command=record_audio).grid(column=0, row=0)
+    tk.Button(frame, text="Quit", command=window.destroy).grid(column=1, row=0)
+    
+    names = get_recording_names()
+    
+    for i in range(0, get_num_recordings()):
+        tk.Button(frame, text=f"{names[i]}").grid(column=0, row=i+1)
+    
+    return
+#end of function add_buttons
+
+add_buttons()
 
 window.mainloop()   #run program
