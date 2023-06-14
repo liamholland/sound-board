@@ -69,6 +69,37 @@ def record_audio():
     return
 #end of function record_audio
 
+#function to play audio
+def play_audio(filename):
+    
+    CHUNK = 1024
+    
+    file = wave.open(filename, 'rb')
+    
+    p = pa.PyAudio()
+    
+    stream = p.open(format = p.get_format_from_width(file.getsampwidth()),
+                channels = file.getnchannels(),
+                rate = file.getframerate(),
+                output = True)
+    
+    data = file.readframes(CHUNK)
+    
+    print(f"playing {filename}")
+    while data != b'':
+        stream.write(data)
+        data = file.readframes(CHUNK)
+        
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
+    
+    print("Done playing")
+    
+    return
+#end of function play_audio
+
+
 #function to retrieve the names of recording files
 def get_recording_names():
     files = os.listdir(os.getcwd())
@@ -90,7 +121,7 @@ def add_buttons():
     names = get_recording_names()
     
     for i in range(0, get_num_recordings()):
-        tk.Button(frame, text=f"{names[i]}").grid(column=0, row=i+1)
+        tk.Button(frame, text=f"{names[i]}", command= lambda: play_audio(names[i])).grid(column=0, row=i+1)
     
     return
 #end of function add_buttons
