@@ -78,17 +78,17 @@ def play_audio(filename):
     
     p = pa.PyAudio()
     
-    stream = p.open(format = p.get_format_from_width(file.getsampwidth()),
-                channels = file.getnchannels(),
-                rate = file.getframerate(),
-                output = True)
+    #open a stream with the settings
+    stream = p.open(format=p.get_format_from_width(file.getsampwidth()),
+                    channels=1,
+                    rate=file.getframerate(),
+                    frames_per_buffer=CHUNK,
+                    input=True)
     
-    data = file.readframes(CHUNK)
-    
-    print(f"playing {filename}")
-    while data != b'':
-        stream.write(data)
-        data = file.readframes(CHUNK)
+
+    #need to find a way to have the stream read from the file here
+    for _ in range(0, int(file.getframerate() / CHUNK * (file.getnframes() / file.getframerate()))):
+        stream.read(CHUNK)
         
     stream.stop_stream()
     stream.close()
